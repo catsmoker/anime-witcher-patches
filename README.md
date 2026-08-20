@@ -15,17 +15,23 @@ The `.mpp` file will be in `patches/build/libs/patches-*.mpp`. Apply it using [M
 ## 🩹 Patches list
 
 <!-- PATCHES_START EXPANDED -->
+> **[v1.0.0-dev.1](https://github.com/catsmoker/anime-witcher-patches/releases/tag/v1.0.0-dev.1)**&nbsp;&nbsp;•&nbsp;&nbsp;`dev`&nbsp;&nbsp;•&nbsp;&nbsp;3 patches total
+<details open>
+<summary>📦 Anime Witcher&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
+<br>
 
-<!-- Do not modify this section by hand. The patch list is generated when release.yml creates a new release.
+**🎯 Supported versions:**
 
-     If you wish for the patches list to be collapsed, then remove the word 'EXPANDED' from the comment tag above.
+| 1.4.8 |
+| :---: |
 
-     If you wish to manually keep this list updated then remove the PATCHES_START and PATCHES_END
-     comment blocks entirely. -->
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [Disable ads](#disable-ads) | Disables all ad display logic in the app. |  |
+| [Remove AppLovin initialization](#remove-applovin-initialization) | Removes AppLovin SDK initialization from the Application class. |  |
+| [Replace AWPlayer with VLC](#replace-awplayer-with-vlc) | Replaces the AWPlayer video player with VLC via system intent chooser. |  |
 
-#### A list of your patches will automatically be shown here after your first patches release is created.
-
-&nbsp;
+</details>
 
 <!-- PATCHES_END -->
 
