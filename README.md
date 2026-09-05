@@ -36,7 +36,7 @@ The `.mpp` file will be in `patches/build/libs/patches-*.mpp`. Apply it using [M
 | [Disable ads](#disable-ads) | Disables all ad display logic in the app. Original APK: https://www.animewitcher.com/ |  | Recommended |
 | [Play with external player](#play-with-external-player) | Opens episodes in a system intent chooser so the user can pick their favorite video player (VLC, MX Player, etc.). Original APK: https://www.animewitcher.com/ |  | Recommended |
 | [Rebranding](#rebranding) | Renames the app to 'Anime Witcher +', changes the package id to app.catsmoker.anime.witcher, badges the icon with a red +, points Telegram links to https://t.me/CATSM0KER and credits the About screen. Original APK: https://www.animewitcher.com/ |  | Recommended |
-| [Rebranding: Telegram & About](#rebranding-telegram-about) | Part of Rebranding: points Telegram links to the configured handle (default https://t.me/CATSM0KER) and adds a bold credit line to the About screen. Original APK: https://www.animewitcher.com/ | • Telegram handle<br>• About credit | Optional |
+| [Rebranding: Telegram & About](#rebranding-telegram-about) | Part of Rebranding: points Telegram links to the configured handle (default https://t.me/CATSM0KER) and adds a credit line to the About screen. Original APK: https://www.animewitcher.com/ | • Telegram handle<br>• About credit | Optional |
 | [Remove AppLovin initialization](#remove-applovin-initialization) | Removes AppLovin SDK initialization from the Application class. Original APK: https://www.animewitcher.com/ |  | Recommended |
 | [Remove startup popup](#remove-startup-popup) | Removes the update/changelog and appearance popups that appear when the app starts. Original APK: https://www.animewitcher.com/ |  | Recommended |
 

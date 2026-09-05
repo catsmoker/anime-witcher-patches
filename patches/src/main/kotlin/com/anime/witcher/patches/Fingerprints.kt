@@ -139,15 +139,3 @@ object HomeOpenAppAppearanceDialogFingerprint : Fingerprint(
     name = "openAppAppearanceDialog",
     returnType = "V",
 )
-
-/**
- * Fingerprint for AboutActivity.onCreate(Bundle)V
- *
- * Sets the in-app version text; used to bold and re-style the catsmoker credit.
- */
-object AboutActivityOnCreateFingerprint : Fingerprint(
-    definingClass = "Lcom/anime/witcher/AboutActivity;",
-    name = "onCreate",
-    returnType = "V",
-    parameters = listOf("Landroid/os/Bundle;"),
-)

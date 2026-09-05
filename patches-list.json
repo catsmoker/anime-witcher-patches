@@ -190,7 +190,7 @@
     },
     {
       "name": "Rebranding: Telegram & About",
-      "description": "Part of Rebranding: points Telegram links to the configured handle (default https://t.me/CATSM0KER) and adds a bold credit line to the About screen. Original APK: https://www.animewitcher.com/",
+      "description": "Part of Rebranding: points Telegram links to the configured handle (default https://t.me/CATSM0KER) and adds a credit line to the About screen. Original APK: https://www.animewitcher.com/",
       "default": false,
       "dependencies": [],
       "compatiblePackages": [
@@ -225,7 +225,7 @@
         {
           "key": "aboutCredit",
           "title": "About credit",
-          "description": "Extra bold credit line appended to the About screen.",
+          "description": "Extra credit line appended to the About screen.",
           "required": false,
           "type": "kotlin.String",
           "default": "Patched by Catsmoker",

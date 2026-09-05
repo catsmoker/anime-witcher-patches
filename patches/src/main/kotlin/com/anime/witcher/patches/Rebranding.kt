@@ -23,13 +23,12 @@ import org.w3c.dom.Element
  *   [rebrandingTelegramHandleOption] (default `CATSM0KER`) by replacing the original
  *   support username "animewitcher_support".
  * - Credits the builder inside the in-app About screen: appends a styled
- *   "✦ <credit> ✦" line (default "Patched by Catsmoker") under the version text and
- *   renders it bold.
+ *   "✦ <credit> ✦" line (default "Patched by Catsmoker") under the version text.
  */
 @Suppress("unused")
 val rebrandingBytecodePatch = bytecodePatch(
     name = "Rebranding: Telegram & About",
-    description = "Part of Rebranding: points Telegram links to the configured handle (default https://t.me/CATSM0KER) and adds a bold credit line to the About screen. Original APK: https://www.animewitcher.com/",
+    description = "Part of Rebranding: points Telegram links to the configured handle (default https://t.me/CATSM0KER) and adds a credit line to the About screen. Original APK: https://www.animewitcher.com/",
     default = false,
 ) {
     compatibleWith(COMPATIBILITY_ANIME_WITCHER)
@@ -46,7 +45,7 @@ val rebrandingBytecodePatch = bytecodePatch(
         key = "aboutCredit",
         default = "Patched by Catsmoker",
         title = "About credit",
-        description = "Extra bold credit line appended to the About screen.",
+        description = "Extra credit line appended to the About screen.",
         required = false,
     )
 
@@ -92,18 +91,6 @@ val rebrandingBytecodePatch = bytecodePatch(
                 }
             }
         }
-
-        val aboutOnCreate = AboutActivityOnCreateFingerprint.method
-        val aboutImplementation = aboutOnCreate.implementation ?: return@execute
-        val insertIndex = aboutImplementation.instructions.size - 1
-        aboutOnCreate.addInstructions(
-            insertIndex,
-            """
-            const/4 v1, 0x1
-
-            invoke-virtual {v0, v1}, Landroid/widget/TextView;->setTypeface(Landroid/graphics/Typeface;I)V
-            """.trimIndent()
-        )
     }
 }
 

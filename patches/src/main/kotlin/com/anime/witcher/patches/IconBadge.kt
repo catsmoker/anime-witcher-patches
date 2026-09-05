@@ -296,10 +296,11 @@ internal object IconBadger {
             raw[p++] = 0 // filter: none
             for (x in 0 until width) {
                 val c = argb[y * width + x]
-                raw[p++] = ((c ushr 24) and 0xFF).toByte()
+                // PNG scanline order is R,G,B,A (straight alpha).
                 raw[p++] = ((c ushr 16) and 0xFF).toByte()
                 raw[p++] = ((c ushr 8) and 0xFF).toByte()
                 raw[p++] = (c and 0xFF).toByte()
+                raw[p++] = ((c ushr 24) and 0xFF).toByte()
             }
         }
 
