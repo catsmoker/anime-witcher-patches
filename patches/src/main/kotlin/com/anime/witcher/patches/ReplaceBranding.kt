@@ -4,6 +4,7 @@ import app.morphe.patcher.extensions.InstructionExtensions.addInstruction
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.extensions.InstructionExtensions.removeInstruction
 import app.morphe.patcher.patch.bytecodePatch
+import app.morphe.patcher.patch.stringOption
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
@@ -15,25 +16,50 @@ import com.android.tools.smali.dexlib2.iface.reference.StringReference
  * patch is wired as a dependency of "Rebranding": it only runs when that patch is
  * enabled, so a stock build stays completely untouched.
  *
- * - Points every Telegram contact link in the app to https://t.me/CATSM0KER by replacing
- *   the original support username "animewitcher_support". A handful of call sites compose
- *   the URL ("https://t.me/" + username), one already embeds the full URL.
+ * - Points every Telegram contact link in the app to the handle configured by
+ *   [telegramHandleOption] (default `CATSM0KER`) by replacing the original support
+ *   username "animewitcher_support". A handful of call sites compose the URL
+ *   ("https://t.me/" + username), one already embeds the full URL.
  * - Credits the builder inside the in-app About screen: appends a styled
- *   "✦ Patched by Catsmoker ✦" line under the version text and renders it bold.
+ *   "✦ <credit> ✦" line (default "Patched by Catsmoker") under the version text and
+ *   renders it bold.
  */
 @Suppress("unused")
 val replaceBrandingPatch = bytecodePatch(
     name = "Rebranding: Telegram & About",
-    description = "Part of Rebranding: points Telegram links to https://t.me/CATSM0KER and adds a bold -Patched by Catsmoker- line to the About screen. Original APK: https://www.animewitcher.com/",
+    description = "Part of Rebranding: points Telegram links to the configured handle (default https://t.me/CATSM0KER) and adds a bold credit line to the About screen. Original APK: https://www.animewitcher.com/",
     default = false,
 ) {
     compatibleWith(COMPATIBILITY_ANIME_WITCHER)
 
+    val telegramHandleOption = stringOption(
+        key = "telegramHandle",
+        default = "CATSM0KER",
+        title = "Telegram handle",
+        description = "Telegram username used for every support/contact link in the app.",
+        required = false,
+    )
+
+    val aboutCreditOption = stringOption(
+        key = "aboutCredit",
+        default = "Patched by Catsmoker",
+        title = "About credit",
+        description = "Extra bold credit line appended to the About screen.",
+        required = false,
+    )
+
     execute {
+        val safeHandle = telegramHandleOption.value
+            ?.takeIf { handle -> handle.matches(Regex("^[A-Za-z0-9_]+$")) }
+            ?: "CATSM0KER"
+        val safeCredit = (aboutCreditOption.value?.takeIf { it.isNotBlank() } ?: "Patched by Catsmoker")
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+
         val replacements = mapOf(
-            "animewitcher_support" to "CATSM0KER",
-            "https://t.me/animewitcher_support?text=" to "https://t.me/CATSM0KER?text=",
-            "اصدار التطبيق : 1.4.8" to "اصدار التطبيق : 1.4.8\\n\\n\u2726 Patched by Catsmoker \u2726",
+            "animewitcher_support" to safeHandle,
+            "https://t.me/animewitcher_support?text=" to "https://t.me/$safeHandle?text=",
+            "اصدار التطبيق : 1.4.8" to "اصدار التطبيق : 1.4.8\\n\\n\u2726 $safeCredit \u2726",
         )
 
         classDefForEach { classDef ->
