@@ -18,13 +18,18 @@ import org.w3c.dom.Element
  *   resource compile step robust).
  * - A `LEANBACK_LAUNCHER` intent filter on [HomeActivity] so the TV / Fire TV home
  *   screen shows a launcher entry.
+ *
+ * This patch is on by default and pulls in the D-pad navigation sub-patch
+ * [tvDpadNavigationPatch], so enabling it wires up both the TV manifest declarations
+ * and full remote navigation.
  */
 val androidTvSupportPatch = resourcePatch(
-    name = "Android TV support",
-    description = "Adds Android TV / Fire TV support (manifest declarations + TV launcher entry).",
-    default = true
+    name = "Android TV",
+    description = "Adds full Android TV / Fire TV support: manifest declarations, TV launcher entry and D-pad remote navigation (focusable content rows, focus out of the top bar, dialog focus). Original APK: https://www.animewitcher.com/",
+    default = false
 ) {
     compatibleWith(COMPATIBILITY_ANIME_WITCHER)
+    dependsOn(tvDpadNavigationPatch)
 
     execute {
         document("AndroidManifest.xml").use { document ->

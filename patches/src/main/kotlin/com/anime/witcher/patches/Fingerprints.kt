@@ -70,6 +70,8 @@ object OnConfirmClickedFingerprint : Fingerprint(
  * update/changelog popup dialog that appears when the app starts.
  */
 object HandleVersionSettingsFingerprint : Fingerprint(
+    definingClass = "Lcom/anime/witcher/HomeActivity;",
+    name = "handleVersionSettings",
     returnType = "V",
     filters = listOf(
         string("\u062a\u0646\u0628\u064a\u0647"),
@@ -125,4 +127,27 @@ object AppCompatActivityDispatchKeyEventFingerprint : Fingerprint(
     name = "dispatchKeyEvent",
     returnType = "Z",
     parameters = listOf("Landroid/view/KeyEvent;"),
+)
+
+/**
+ * Fingerprint for HomeActivity.openAppAppearanceDialog()V
+ *
+ * Shows the "choose appearance / server" popup on the first app open.
+ */
+object HomeOpenAppAppearanceDialogFingerprint : Fingerprint(
+    definingClass = "Lcom/anime/witcher/HomeActivity;",
+    name = "openAppAppearanceDialog",
+    returnType = "V",
+)
+
+/**
+ * Fingerprint for AboutActivity.onCreate(Bundle)V
+ *
+ * Sets the in-app version text; used to bold and re-style the catsmoker credit.
+ */
+object AboutActivityOnCreateFingerprint : Fingerprint(
+    definingClass = "Lcom/anime/witcher/AboutActivity;",
+    name = "onCreate",
+    returnType = "V",
+    parameters = listOf("Landroid/os/Bundle;"),
 )
