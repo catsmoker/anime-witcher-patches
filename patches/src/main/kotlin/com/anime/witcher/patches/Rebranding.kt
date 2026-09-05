@@ -9,12 +9,6 @@ import app.morphe.patcher.patch.stringOption
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
-import java.awt.BasicStroke
-import java.awt.Color
-import java.awt.RenderingHints
-import java.awt.geom.Line2D
-import java.io.File
-import javax.imageio.ImageIO
 import org.w3c.dom.Element
 
 /**
@@ -200,7 +194,7 @@ val rebrandingPatch = resourcePatch(
                         null
                     }
                 if (icon != null) {
-                    drawCornerPlus(icon)
+                    IconBadger.badge(icon)
                 }
             }
         }
@@ -208,47 +202,8 @@ val rebrandingPatch = resourcePatch(
 }
 
 /**
- * Paints a small red "+" badge in the top-right quadrant of the icon, with a thin
- * white outline so it stays readable over the dark logo. Placement inside the
- * adaptive icon safe zone keeps it visible even on launchers that mask the icon.
+ * The red "+" badge (with white outline) used to be drawn with AWT / javax.imageio,
+ * which crashes the on-device patcher inside Morphe Manager (NoClassDefFoundError).
+ * The drawing now lives in [IconBadger], a pure PNG decoder/drawer/encoder that runs
+ * on both the desktop JVM and Android ART.
  */
-private fun drawCornerPlus(file: File) {
-    val image = try {
-        ImageIO.read(file)
-    } catch (e: Exception) {
-        return
-    } ?: return
-
-    val size = minOf(image.width, image.height)
-    if (size < 24) {
-        return
-    }
-
-    val graphics = image.createGraphics() ?: return
-    graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
-    graphics.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE)
-
-    val thickness = size * 0.050f
-    val arm = size * 0.035f
-    val centerX = size * 0.640f
-    val centerY = size * 0.360f
-
-    // White outline drawn a bit larger behind the red cross for contrast.
-    graphics.color = Color.WHITE
-    graphics.stroke = BasicStroke(thickness * 1.6f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND)
-    graphics.draw(Line2D.Float(centerX - arm, centerY, centerX + arm, centerY))
-    graphics.draw(Line2D.Float(centerX, centerY - arm, centerX, centerY + arm))
-
-    graphics.color = Color(229, 57, 53, 255)
-    graphics.stroke = BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND)
-    graphics.draw(Line2D.Float(centerX - arm, centerY, centerX + arm, centerY))
-    graphics.draw(Line2D.Float(centerX, centerY - arm, centerX, centerY + arm))
-
-    graphics.dispose()
-
-    try {
-        ImageIO.write(image, "png", file)
-    } catch (e: Exception) {
-        // Ignore: the badge is cosmetic and must never fail the patch.
-    }
-}
