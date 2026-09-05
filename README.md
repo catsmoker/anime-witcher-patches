@@ -17,7 +17,7 @@ The `.mpp` file will be in `patches/build/libs/patches-*.mpp`. Apply it using [M
 ## 🩹 Patches list
 
 <!-- PATCHES_START EXPANDED -->
-> **[v1.2.0](https://github.com/catsmoker/anime-witcher-patches/releases/tag/v1.2.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;9 patches total
+> **[v1.3.0](https://github.com/catsmoker/anime-witcher-patches/releases/tag/v1.3.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;9 patches total
 <details open>
 <summary>📦 Anime Witcher&nbsp;&nbsp;•&nbsp;&nbsp;9 patches</summary>
 <br>

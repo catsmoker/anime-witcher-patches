@@ -1,3 +1,9 @@
+## [1.3.0](https://github.com/catsmoker/anime-witcher-patches/compare/v1.2.0...v1.3.0) (2026-09-05)
+
+### ✨ New Features
+
+* add configurable Rebranding options (telegram handle, about credit) ([e891a9b](https://github.com/catsmoker/anime-witcher-patches/commit/e891a9b294bf9e4866443a6c299888f48b6ce612))
+
 ## [1.2.0](https://github.com/catsmoker/anime-witcher-patches/compare/v1.1.0...v1.2.0) (2026-09-05)
 
 ### ✨ New Features
