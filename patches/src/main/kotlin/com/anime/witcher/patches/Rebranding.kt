@@ -1,6 +1,14 @@
 package com.anime.witcher.patches
 
+import app.morphe.patcher.extensions.InstructionExtensions.addInstruction
+import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
+import app.morphe.patcher.extensions.InstructionExtensions.removeInstruction
+import app.morphe.patcher.patch.bytecodePatch
 import app.morphe.patcher.patch.resourcePatch
+import app.morphe.patcher.patch.stringOption
+import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
+import com.android.tools.smali.dexlib2.iface.reference.StringReference
 import java.awt.BasicStroke
 import java.awt.Color
 import java.awt.RenderingHints
@@ -10,8 +18,104 @@ import javax.imageio.ImageIO
 import org.w3c.dom.Element
 
 /**
- * Rebrands the modded build into its own "Anime Witcher +" entry. Optional — when
- * enabled it does all of:
+ * Bytecode portion of rebranding — Telegram + About-screen credit.
+ *
+ * These strings live in dex, so they can only be changed by a bytecode patch. The
+ * patch is wired as a dependency of [rebrandingPatch]: it only runs when that patch is
+ * enabled, so a stock build stays completely untouched. Not recommended on its own:
+ * it must always run together with [rebrandingPatch].
+ *
+ * - Points every Telegram contact link in the app to the handle configured by
+ *   [rebrandingTelegramHandleOption] (default `CATSM0KER`) by replacing the original
+ *   support username "animewitcher_support".
+ * - Credits the builder inside the in-app About screen: appends a styled
+ *   "✦ <credit> ✦" line (default "Patched by Catsmoker") under the version text and
+ *   renders it bold.
+ */
+@Suppress("unused")
+val rebrandingBytecodePatch = bytecodePatch(
+    name = "Rebranding: Telegram & About",
+    description = "Part of Rebranding: points Telegram links to the configured handle (default https://t.me/CATSM0KER) and adds a bold credit line to the About screen. Original APK: https://www.animewitcher.com/",
+    default = false,
+) {
+    compatibleWith(COMPATIBILITY_ANIME_WITCHER)
+
+    val telegramHandleOption = stringOption(
+        key = "telegramHandle",
+        default = "CATSM0KER",
+        title = "Telegram handle",
+        description = "Telegram username used for every support/contact link in the app.",
+        required = false,
+    )
+
+    val aboutCreditOption = stringOption(
+        key = "aboutCredit",
+        default = "Patched by Catsmoker",
+        title = "About credit",
+        description = "Extra bold credit line appended to the About screen.",
+        required = false,
+    )
+
+    execute {
+        val safeHandle = telegramHandleOption.value
+            ?.takeIf { handle -> handle.matches(Regex("^[A-Za-z0-9_]+$")) }
+            ?: "CATSM0KER"
+        val safeCredit = (aboutCreditOption.value?.takeIf { it.isNotBlank() } ?: "Patched by Catsmoker")
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+
+        val replacements = mapOf(
+            "animewitcher_support" to safeHandle,
+            "https://t.me/animewitcher_support?text=" to "https://t.me/$safeHandle?text=",
+            "اصدار التطبيق : 1.4.8" to "اصدار التطبيق : 1.4.8\\n\\n\u2726 $safeCredit \u2726",
+        )
+
+        classDefForEach { classDef ->
+            val mutableClass = mutableClassDefBy(classDef)
+            mutableClass.methods.forEach methodLoop@{ method ->
+                val implementation = method.implementation ?: return@methodLoop
+
+                val matches = implementation.instructions.withIndex().mapNotNull { (index, instruction) ->
+                    val reference = (instruction as? ReferenceInstruction)?.reference as? StringReference
+                    val oldValue = (reference as? StringReference)?.string
+                    val newValue = oldValue?.let { old -> replacements[old] }
+                    if (newValue == null) {
+                        return@mapNotNull null
+                    }
+                    val register = (instruction as? OneRegisterInstruction)?.registerA
+                    if (register == null) {
+                        return@mapNotNull null
+                    }
+                    index to (register to newValue)
+                }
+
+                matches.asReversed().forEach { (index, registerAndValue) ->
+                    method.removeInstruction(index)
+                    method.addInstruction(
+                        index,
+                        "const-string v${registerAndValue.first}, \"${registerAndValue.second}\""
+                    )
+                }
+            }
+        }
+
+        val aboutOnCreate = AboutActivityOnCreateFingerprint.method
+        val aboutImplementation = aboutOnCreate.implementation ?: return@execute
+        val insertIndex = aboutImplementation.instructions.size - 1
+        aboutOnCreate.addInstructions(
+            insertIndex,
+            """
+            const/4 v1, 0x1
+
+            invoke-virtual {v0, v1}, Landroid/widget/TextView;->setTypeface(Landroid/graphics/Typeface;I)V
+            """.trimIndent()
+        )
+    }
+}
+
+/**
+ * Rebrands the modded build into its own "Anime Witcher +" entry. Recommended.
+ * When enabled it does all of:
  *
  * - Changes the install/launcher package ("application id") to
  *   `app.catsmoker.anime.witcher` so the mod is its own app entry. Every manifest
@@ -22,17 +126,17 @@ import org.w3c.dom.Element
  * - Adds a small red "+" badge to the launcher icon (adaptive foreground +
  *   legacy icons, all densities). The `android:banner` points at the same mipmap,
  *   so the TV banner picks up the badge automatically.
- * - Pulls in [replaceBrandingPatch] (the Telegram + About-screen credit), which
+ * - Pulls in [rebrandingBytecodePatch] (the Telegram + About-screen credit), which
  *   can only exist as a bytecode patch because those strings live in dex.
  */
 @Suppress("unused")
 val rebrandingPatch = resourcePatch(
     name = "Rebranding",
     description = "Renames the app to 'Anime Witcher +', changes the package id to app.catsmoker.anime.witcher, badges the icon with a red +, points Telegram links to https://t.me/CATSM0KER and credits the About screen. Original APK: https://www.animewitcher.com/",
-    default = false,
+    default = true,
 ) {
     compatibleWith(COMPATIBILITY_ANIME_WITCHER)
-    dependsOn(replaceBrandingPatch)
+    dependsOn(rebrandingBytecodePatch)
 
     execute {
         document("AndroidManifest.xml").use { document ->
