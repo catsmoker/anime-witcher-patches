@@ -1,6 +1,6 @@
 # Anime Witcher Morphe Patches
 
-Patches for **Anime Witcher** (`com.anime.witcher`) v1.4.8.
+Patches for **Anime Witcher** (`com.anime.witcher`) v1.4.9.
 
 > **Note:** Google login is no longer working.
 
@@ -24,7 +24,7 @@ The `.mpp` file will be in `patches/build/libs/patches-*.mpp`. Apply it using [M
 
 **🎯 Supported versions:**
 
-| 1.4.8 |
+| 1.4.9 |
 | :---: |
 
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options | 🏷️&nbsp;Status |
